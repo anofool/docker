@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  webmin-proxy:
+    image: qoomon/docker-host:latest
+    restart: always
+    cap_add: ["NET_ADMIN", "NET_RAW"]
+    networks:
+      - edge-router
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=edge-router"
+      - "traefik.http.routers.webmin-proxy.entrypoints=websecure"
+      - "traefik.http.routers.webmin-proxy.rule=Host(`webmin.example.com`)"
+      - "traefik.http.routers.webmin-proxy.tls=true"
+      - "traefik.http.routers.webmin-proxy.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.webmin-proxy.service=webmin-proxy-service"
+      - "traefik.http.services.webmin-proxy-service.loadbalancer.server.port=10000"
+
+networks:
+  edge-router:
+    external: true
